@@ -120,6 +120,21 @@ env = { CARDINAL_EMBEDDER = "none" }
 Default returns are the compressed cards projection; pass `format:"json"|"ids"`
 for full objects.
 
+## Testing & evaluation
+
+```sh
+pip install -r requirements-dev.txt
+pytest                                          # fast unit suite — no network, no torch
+python evaluate.py                              # retrieval quality per mode
+CARDINAL_EMBEDDER=specter2 python evaluate.py   # measure real semantic/hybrid quality
+```
+
+`evaluate.py` reports P@k / Recall@k / MRR / nDCG@k for keyword vs semantic vs
+hybrid on a small labeled corpus (`tests/fixtures/eval_corpus.json`). With SPECTER2,
+semantic and hybrid clearly beat keyword on paraphrase queries (e.g. MRR: keyword
+~0.81, semantic ~0.94; hybrid wins recall@5) — so retrieval quality is measurable
+and regressions are visible.
+
 ## Layout
 
 ```
@@ -127,6 +142,8 @@ schema.sql       derived-index schema (tables/FTS5/vec0/triggers/v_card view)
 build_index.py   apply schema.sql -> index.db (rebuildable anytime)
 seed.py          S2/OpenAlex -> nodes/edges/TLDR/SPECTER2
 okf.py           emit/read the OKF canonical bundle (source of truth)
+evaluate.py      retrieval-quality eval harness (P@k / MRR / nDCG)
+tests/           pytest suite + eval_corpus fixture
 db.py            connection factory (loads sqlite-vec)
 embed.py         query-embedder interface + factory
 cards.py         §4 compressed card projection
