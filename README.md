@@ -40,9 +40,25 @@ S2_API_KEY=xxx .venv/bin/python seed.py --query "backdoor defense" --source s2 -
 | Var | Default | Purpose |
 |---|---|---|
 | `CARDINAL_DB` | `./index.db` | index location |
-| `CARDINAL_EMBEDDER` | `none` | query embedder for semantic/hybrid (`none`/`hash`/your model) |
+| `CARDINAL_EMBEDDER` | `none` | semantic-search embedder: `none` / `specter2` / `hash` |
 | `S2_API_KEY` | — | Semantic Scholar API key |
 | `OPENALEX_MAILTO` | — | OpenAlex polite-pool contact |
+
+## Semantic search (optional extra)
+
+Keyword search works out of the box. For real semantic/hybrid search, install the
+SPECTER2 embedder (heavier — torch + transformers + adapters) and select it:
+
+```sh
+pip install -r requirements-embed.txt      # CPU-only: pip install torch --index-url https://download.pytorch.org/whl/cpu first
+export CARDINAL_EMBEDDER=specter2
+```
+
+SPECTER2 (768-dim) shares Semantic Scholar's `embedding.specter_v2` space, so locally
+embedded queries align with S2-provided corpus vectors — and OpenAlex papers (no S2
+vector) can be embedded into the same space. The model lazy-loads on the first
+semantic query, so keyword-only sessions pay nothing. `hash` is a test-only
+placeholder; with `none`, hybrid search falls back to keyword.
 
 ## OKF canonical bundle (`okf.py`, PLAN.md §7.2/§7.3)
 

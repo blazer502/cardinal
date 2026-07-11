@@ -1,0 +1,8 @@
+# Optional extra: real semantic/hybrid search via SPECTER2 (CARDINAL_EMBEDDER=specter2).
+# The core tool does NOT need any of this — keyword search works without it.
+# For a much smaller CPU-only torch, install it first from the CPU wheel index:
+#   pip install torch --index-url https://download.pytorch.org/whl/cpu
+#   pip install -r requirements-embed.txt
+torch
+transformers
+adapters
