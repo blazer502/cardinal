@@ -1,0 +1,12 @@
+# Derived search index — rebuildable from schema.sql / OKF bundle (PLAN.md §7.3)
+index.db
+index.db-wal
+index.db-shm
+
+# OKF canonical bundle + derived index are per-user corpus data, not tool source.
+# (In a real deployment the OKF bundle is the source of truth you version separately.)
+okf/
+
+# Python
+.venv/
+__pycache__/
