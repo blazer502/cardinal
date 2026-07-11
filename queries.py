@@ -9,8 +9,11 @@ including the FTS5 MATCH string. Never string-interpolate agent input into SQL.
 """
 import hashlib
 import json
+import re
 import sqlite3
 import struct
+
+_WORD = re.compile(r"[0-9a-zA-Z]+")
 
 # card columns pulled straight from the paper table (superset of the v_card view;
 # venue is included so format="json" can return it, per §3.1).
@@ -61,13 +64,24 @@ def _row_matches(row: dict, filters: dict | None) -> bool:
 # ---------------------------------------------------------------------------
 # search (§3.1)
 # ---------------------------------------------------------------------------
+def _fts_query(text):
+    """Turn a natural-language query into an OR of quoted tokens.
+
+    FTS5's implicit operator is AND, which makes multi-word NL queries brittle
+    (every word, incl. stopwords, must appear). We OR the alphanumeric tokens so
+    BM25 ranks by term overlap; quoting each token also neutralizes FTS operators,
+    so the (still bound) MATCH string can't be injected with."""
+    return " OR ".join(f'"{t}"' for t in _WORD.findall(text.lower()))
+
+
 def _keyword(conn, query, k, where, wparams):
-    if not query or not query.strip():
+    match = _fts_query(query or "")
+    if not match:
         return []
     sql = (f"SELECT {_SELECT}, bm25(fts_paper) AS score "
            "FROM fts_paper JOIN paper p ON p.rowid = fts_paper.rowid "
            "WHERE fts_paper MATCH ?")
-    params = [query]
+    params = [match]
     if where:
         sql += " AND " + where; params += wparams
     sql += " ORDER BY score LIMIT ?"; params.append(k)  # bm25: lower = better
