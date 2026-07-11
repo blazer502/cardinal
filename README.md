@@ -2,7 +2,8 @@
 
 Token-efficient related-work index + MCP server. Deterministic search (0 LLM
 tokens) over a SQLite index (sqlite-vec + FTS5), built from public metadata.
-See [`PLAN.md`](PLAN.md) for the full design and [`schema.sql`](schema.sql) for the schema.
+See [`PLAN.md`](PLAN.md) for the full design, [`ROADMAP.md`](ROADMAP.md) for status
+and next steps, and [`schema.sql`](schema.sql) for the schema.
 
 ## Reproduce anywhere
 
